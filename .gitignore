@@ -1,0 +1,14 @@
+*.bak
+*.ipch
+*.log
+*.obj
+*.idb
+*.pdb
+*.pdf
+*.tlog
+*.zip
+
+__pycache__
+.pytest_cache
+.vs
+.vscode
