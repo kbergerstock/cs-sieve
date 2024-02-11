@@ -22,8 +22,9 @@ def milliseconds(t0,t2):
 class Primes:
     def __init__(self,max):
         self.n = max
-        self.nl = max // 2
-        self.v = bytearray(self.nl)
+        self.nbits = max >> 1
+        size = 1 + self.nbits >> 3 
+        self.v = bytearray(size)
 
     def reset(self):
         """ set data array to all zeros """
@@ -47,7 +48,7 @@ class Primes:
         """
         # assumes v is all zero's on entry
         # and that n is the max value To stop the search on
-        # by eliminating all floating point ops (especially the sqrt function)
+        # by eliminating all floating point ops (especially the sqrt function)cat
         # i reduced the run time to under 90 milliseconds
         self.v[0] = 1
         for j in range(1, self.nl):
@@ -55,7 +56,7 @@ class Primes:
                 # calc the factor
                 f = 1 + (j * 2)
                 # equivlent to f < sqrt(n)
-                if (f * f) < self.n:
+                if (f * f ) < self.n: 
                     # mark all multiples of prime
                     for ndx in range(j + f, self.nl, f):
                         # as not prime
