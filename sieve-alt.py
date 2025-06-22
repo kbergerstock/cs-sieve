@@ -5,80 +5,86 @@
 import time
 import sys
 
+# the table includes the square root of the sieve limit as the second column
 M = {
-    10 : 4,
-    100 : 25,
-    1000 : 168,
-    10000 : 1229,
-    100000 : 9592,
-    1000000 : 78498,
-    10000000 : 684579,
-    100000000 : 5761455,
+    10: [4, 3],
+    100: [25, 10],
+    1000: [168, 32],
+    10000: [1229, 100],
+    100000: [9592, 316],
+    1000000: [78498, 1000],
+    10000000: [664579, 3162],
+    100000000: [5761455, 10000],
 }
 
-def milliseconds(t0,t2):
+
+def milliseconds(t0, t2):
     return (t2 - t0) * 1000
 
 class Primes:
-    def __init__(self,max):
+    def __init__(self, max):
+        self.sqrt = M[max][1]
         self.n = max
-        self.nbits = max >> 1
-        size = 1 + self.nbits >> 3 
-        self.v = bytearray(size)
+        self.nbits = 1 + max >> 1
+        self.v = bytearray(self.nbits)
 
     def reset(self):
-        """ set data array to all zeros """
-        for i in range(self.nl):
-            self.v[i] = 0
+        """set data array to all zeros"""
+        for w in self.v:
+            w = 0
 
     def get_primes(self):
-        """ returns an array of prime numbers based on the results in the sieve array """
+        """returns an array of prime numbers
+        based on the results in the sieve array"""
         p = [2]
-        cnt = 0
-        for k in self.v:
-            if k == 0:
-                p.append(1 + (cnt * 2))
-            cnt += 1   
+        for jdx in range(3, self.n, 2):
+            if self.v[jdx >> 1] == 0:
+                p.append(jdx)
         return p
 
+    def mark_multiples(self, jdx):
+        # mark all multiples of prime
+        # starting at the prime squared
+        inc = 2 * jdx
+        ndx = jdx + inc
+        while ndx < self.n:
+            self.v[ndx>>1] = 1
+            ndx += inc
+
     def sieve2(self):
-        """ performs the sieve, results:
-                0 indicates that the number is a PRIME
-                1 indicates that the number is a multiple of a prme
+        """performs the sieve, results:
+        0 indicates that the number is a PRIME
+        1 indicates that the number is a multiple of a prime
         """
         # assumes v is all zero's on entry
-        # and that n is the max value To stop the search on
-        # by eliminating all floating point ops (especially the sqrt function)cat
+        # and that n is the max.
+        #
+        # value To stop the search sqrt of number of primes
+        #
+        # by eliminating all floating po+-int ops (especially the sqrt function)
         # i reduced the run time to under 90 milliseconds
         self.v[0] = 1
-        for j in range(1, self.nl):
-            if self.v[j] == 0:
-                # calc the factor
-                f = 1 + (j * 2)
-                # equivlent to f < sqrt(n)
-                if (f * f ) < self.n: 
-                    # mark all multiples of prime
-                    for ndx in range(j + f, self.nl, f):
-                        # as not prime
-                        self.v[ndx] = 1 
-                else: 
-                    # all multiples have been marked so stop
-                    break 
-                    
+        for jdx in range(3, self.sqrt, 2):
+            if self.v[jdx >> 1] == 0:
+                self.mark_multiples(jdx)
+
     def counted(self):
-        """ returns the number of counted primes """
+        """returns the number of counted primes"""
         # adjust for not including TWO as a factor
         return 1 + self.v.count(0)
 
     def validate(self):
-        """ verifies the counted primes against the expected """
-        return self.counted() == M[self.n]
+        """verifies the counted primes against the expected"""
+        return self.counted() == M[self.n][0]
 
-# main 
+
+# main
 def time_sieve(prime_limit, time_limit, output):
-    cnt = 0                         # pass counter
-    primes = Primes(prime_limit)    # the sieve 
+    cnt = 0  # pass counter
+    primes = Primes(prime_limit)  # the sieve
     duration = 0
+    print("--n{}".format(prime_limit))
+    print("--t{}".format(time_limit))   
     while duration < time_limit:
         # clear the prime flag array
         primes.reset()
@@ -86,30 +92,39 @@ def time_sieve(prime_limit, time_limit, output):
         t1 = t0 = time.perf_counter()
         primes.sieve2()
         t1 = time.perf_counter()
-        duration += milliseconds(t0,t1)
+        duration += milliseconds(t0, t1)
         if not primes.validate():
             break
         cnt += 1
 
-    print("passes: {0:4d}  time: {1:9.4f} Ms Avg: {2:7.4f} Ms  Limit: {3:8d}  count: {4:4d} valid: {5}"\
-        .format(cnt,duration,duration/cnt,prime_limit,primes.counted(), primes.validate() ))
+    print(
+        "passes: {0:4d}  time: {1:9.4f} Ms Avg: {2:7.4f} Ms  Limit: {3:8d}  count: {4:4d} valid: {5}".format(
+            cnt,
+            duration,
+            duration / cnt,
+            prime_limit,
+            primes.counted(),
+            primes.validate(),
+        )
+    )
 
     if output:
-        print(primes.get_primes())        
-                
+        print(primes.get_primes())
+
+
 if __name__ == "__main__":
     prime_limit = 1000000
-    time_limit = 10000      #time unit is in mS
+    time_limit = 10000  # time unit is in mS
     output = False
 
     for argc in sys.argv:
         cmd = argc[0:3]
         val = argc[3:]
-        if cmd == '--t':
+        if cmd == "--t":
             time_limit = int(val)
-        if cmd == '--n':
+        if cmd == "--n":
             prime_limit = int(val)
-        if cmd == '--s':
+        if cmd == "--s":
             output = True
 
     if prime_limit in M:
