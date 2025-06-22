@@ -7,18 +7,17 @@ import time
 import sys
 import bitarray
 
-# from icecream import ic
-# ic(jdx,ndx, bitpos(ndx), self.v[bitpos(ndx)])
 
+# the table includes the square root of the sieve limit as the second column
 M = {
-    10: [4,3],
-    100: [25,10],
-    1000: [168,32],
-    10000: [1229,100],
-    100000: [9592,316],
-    1000000: [78498,1000],
-    10000000: [664579,3162],
-    100000000: [5761455,10000],
+    10: [4, 3],
+    100: [25, 10],
+    1000: [168, 32],
+    10000: [1229, 100],
+    100000: [9592, 316],
+    1000000: [78498, 1000],
+    10000000: [664579, 3162],
+    100000000: [5761455, 10000],
 }
 
 
@@ -26,24 +25,22 @@ def milliseconds(t0: int, t2: int):
     return (t2 - t0) * 1000
 
 
-def bitpos(jdx):
-    return 1 + (jdx >> 1)
-
+#calculate the bit position for the prime or the multiple of the prime
+bitpos = lambda jdx: 1 + (jdx >> 1)
 
 class Primes:
     def __init__(self, max: int):
         self.n = max
         self.sqrt = M[max][1]
+        #  calculate number of bits needed
         self.nbits = 1 + (max >> 1)
         self.v = bitarray.bitarray(self.nbits)
         self.v[0 : self.nbits] = 0
         self.v[0] = 1
-        self.nprimes = 0
-        self.cnt = 0
 
     def get_primes(self):
         """returns an array of prime numbers
-        based on the results in the sievearray"""
+        based on the results in the sieve array"""
         p = [2]
         for jdx in range(3, self.n, 2):
             if self.v[bitpos(jdx)] == 0:
@@ -51,10 +48,9 @@ class Primes:
         return p
 
     def mark_multiples(self, jdx):
-        # mark all multiples of prime
-        # starting at the prime squared
+        """mark all multiples of prime"""
+        inc = jdx << 1
         ndx = jdx * jdx
-        inc = 2 * jdx
         while ndx < self.n:
             # calc the bit pos
             self.v[bitpos(ndx)] = 1
@@ -70,17 +66,13 @@ class Primes:
         # i reduced the run time to under 90 milliseconds
         # ic(self.nbits)
         self.v[0] = 1
-        jdx = 3
-        while jdx <= self.sqrt:
+        for jdx in range(3,self.sqrt,2):
             if self.v[bitpos(jdx)] == 0:
-                # self.mark_multiples(jdx)
                 self.mark_multiples(jdx)
-            jdx += 2
 
     def counted(self):
         """returns the number of counted primes"""
-        self.nprimes = 1 + self.v.count(0, 2, self.nbits)
-        return self.nprimes
+        return 1 + self.v.count(0, 2, self.nbits)
 
     def validate(self):
         """verifies the counted primes against the expected"""
@@ -90,7 +82,6 @@ class Primes:
 # main
 def time_sieve(prime_limit: int, time_limit: int, output: bool):
     cnt = 0  # pass counter
-    primes = Primes(prime_limit)  # the sieve
     duration = 0
     print("--n{}".format(prime_limit))
     print("--t{}".format(time_limit))
@@ -136,8 +127,6 @@ if __name__ == "__main__":
         if cmd == "--s":
             output = True
 
-    # ic("--t ", time_limit)
-    # ic("--n ", prime_limit)
     if prime_limit in M:
         time_sieve(prime_limit, time_limit, output)
     else:

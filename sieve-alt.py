@@ -26,12 +26,9 @@ class Primes:
         self.sqrt = M[max][1]
         self.n = max
         self.nbits = 1 + max >> 1
+        # the byte array allocator returns an array of zero's
         self.v = bytearray(self.nbits)
 
-    def reset(self):
-        """set data array to all zeros"""
-        for w in self.v:
-            w = 0
 
     def get_primes(self):
         """returns an array of prime numbers
@@ -43,10 +40,9 @@ class Primes:
         return p
 
     def mark_multiples(self, jdx):
-        # mark all multiples of prime
-        # starting at the prime squared
+        """mark all multiples of prime"""
         inc = 2 * jdx
-        ndx = jdx + inc
+        ndx = jdx * jdx
         while ndx < self.n:
             self.v[ndx>>1] = 1
             ndx += inc
@@ -81,21 +77,19 @@ class Primes:
 # main
 def time_sieve(prime_limit, time_limit, output):
     cnt = 0  # pass counter
-    primes = Primes(prime_limit)  # the sieve
     duration = 0
     print("--n{}".format(prime_limit))
     print("--t{}".format(time_limit))   
     while duration < time_limit:
-        # clear the prime flag array
-        primes.reset()
+        primes = Primes(prime_limit)  # the sieve
         # i only want to time the sieve performance
         t1 = t0 = time.perf_counter()
         primes.sieve2()
         t1 = time.perf_counter()
         duration += milliseconds(t0, t1)
+        cnt += 1
         if not primes.validate():
             break
-        cnt += 1
 
     print(
         "passes: {0:4d}  time: {1:9.4f} Ms Avg: {2:7.4f} Ms  Limit: {3:8d}  count: {4:4d} valid: {5}".format(
