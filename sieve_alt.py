@@ -2,6 +2,7 @@
 # Keith R. Bergerstock
 # alternate uses same algorithm but stores data in a bytearray
 
+from logging import exception
 import time
 import sys
 
@@ -75,9 +76,12 @@ class Primes:
 
 
 # main
-def time_sieve(prime_limit, time_limit, output):
+def time_sieve(prime_limit : int, time_limit :int, output:bool)--> None:
     cnt = 0  # pass counter
     duration = 0
+    val = 0
+    cnd = 0
+    p = []
     print("--n{}".format(prime_limit))
     print("--t{}".format(time_limit))   
     while duration < time_limit:
@@ -88,22 +92,25 @@ def time_sieve(prime_limit, time_limit, output):
         t1 = time.perf_counter()
         duration += milliseconds(t0, t1)
         cnt += 1
-        if not primes.validate():
-            break
-
-    print(
-        "passes: {0:4d}  time: {1:9.4f} Ms Avg: {2:7.4f} Ms  Limit: {3:8d}  count: {4:4d} valid: {5}".format(
-            cnt,
+        val = primes.validate
+        cnd = primes.counted()
+        if output:
+            p = primes.get_primes()
+        if not val():
+            raise RuntimeError("Vlidation of counted primes failed")
+            
+    # prints the results of the sieve
+    if  val:    
+        print(f"passes: {0:4d}  time: {1:9.4f} Ms Avg: {2:7.4f} Ms  Limit: {3:8d}  count: {4:4d} valid: {5}",            cnt,
             duration,
             duration / cnt,
             prime_limit,
-            primes.counted(),
-            primes.validate(),
+            val,
+            cnd
         )
-    )
 
     if output:
-        print(primes.get_primes())
+        print(p)
 
 
 if __name__ == "__main__":
@@ -122,6 +129,9 @@ if __name__ == "__main__":
             output = True
 
     if prime_limit in M:
-        time_sieve(prime_limit, time_limit, output)
+        try:
+            time_sieve(prime_limit, time_limit, output)
+        except RuntimeError as msg:
+            print(msg)
     else:
         print("invalid prime limit")
