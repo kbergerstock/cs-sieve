@@ -25,8 +25,9 @@ def milliseconds(t0: int, t2: int):
     return (t2 - t0) * 1000
 
 
-#calculate the bit position for the prime or the multiple of the prime
+# calculate the bit position for the prime or the multiple of the prime
 bitpos = lambda jdx: 1 + (jdx >> 1)
+
 
 class Primes:
     def __init__(self, max: int):
@@ -66,7 +67,7 @@ class Primes:
         # i reduced the run time to under 90 milliseconds
         # ic(self.nbits)
         self.v[0] = 1
-        for jdx in range(3,self.sqrt,2):
+        for jdx in range(3, self.sqrt, 2):
             if self.v[bitpos(jdx)] == 0:
                 self.mark_multiples(jdx)
 
