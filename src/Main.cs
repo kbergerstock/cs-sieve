@@ -1,16 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-
+﻿
 namespace PrimeSieve
 {
     class Program
     {
-        static void Main(string[] args)
-        {
-            long MaxPrime = 1000000;
-            int MaxTime = 5000;
-            bool option = false;
-            foreach (var arg in args)
+		long MaxPrime = 1000000;
+		int MaxTime = 5000;
+		bool option = false;
+		
+		static void ParseArgs(string[] args)
+		{
+			foreach (var arg in args)
             {
                 if (arg.StartsWith("--s"))
                 {
@@ -33,17 +32,10 @@ namespace PrimeSieve
                 Console.WriteLine("primeSieve!");
                 Console.WriteLine($" prime limit {0}", MaxPrime);
                 Console.WriteLine($" time limit {0} milliseconds", MaxTime);
-                try
-                {
-                    TimeSieve(MaxPrime, MaxTime, option);
-                }
-                catch (ApplicationException ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+			}
+		}
+		
 
-            }
-        }
         public static void TimeSieve(long MaxPrime, int MaxTime, bool show)
         {
             Mtable M = new Mtable(MaxPrime);
@@ -77,6 +69,20 @@ namespace PrimeSieve
             // OUTPUT THE RESULTS
             Console.WriteLine($"number of passes {cntPasses}");
             Console.WriteLine($"quanity of clock tics used {duration}");
+        }
+		
+		
+		static void Main(string[] args)
+        {
+			ParseArgs(args)
+			try
+			{
+				TimeSieve(MaxPrime, MaxTime, option);
+			}
+			catch (ApplicationException ex)
+			{
+				Console.WriteLine(ex.Message);
+			}
         }
     }
 }
