@@ -35,6 +35,7 @@ namespace PrimeSieve{
             this.sqrtLimit = M.GetPrimeSqrt(this.primeLimit);
             this.nbits = 1 + primeLimit >> 1;
             this.v = new bool[this.nbits];
+			this.Valid = false;
         }
 
         //returns an array of prime numbers
@@ -59,7 +60,7 @@ namespace PrimeSieve{
         {
             long inc = 2 * jdx;
             long ndx = jdx * jdx;
-            while (ndx < this.nbits)
+            while (ndx < this.primeLimit)
             {
                 v[ndx >> 1] = true;
                 ndx += inc;
@@ -72,19 +73,22 @@ namespace PrimeSieve{
         public void Sieve2()
         {
             this.v[0] = true;
-            for (long jdx = 3; jdx < this.sqrtLimit; jdx = +2)
-                if (!this.v[jdx >> 1])
+			long idx = 3;
+            for (; idx < this.sqrtLimit; idx += 2)
+			{
+                if (!this.v[idx >> 1])
                 {
-                    MarkMultiples(jdx);
+                    MarkMultiples(idx);
                     this.pcnt++;
                 }
-            this.Valid = Validate2();
+			}
+			pcnt += countPrimes(idx);
+            this.Valid = Validate();
         }
 
-        public long CountPrimes()
+        public long CountPrimes(long jdx)
         {
-            long cnt = 1;
-            for (long jdx = 0; jdx < nbits; jdx++)
+            for (; jdx < nbits; jdx++)
                 if (!this.v[jdx])
                     cnt++;
             return cnt;
@@ -92,12 +96,13 @@ namespace PrimeSieve{
 
         public bool Validate()
         {
-            return this.M.GetPrimeCount(this.primeLimit) == CountPrimes();
+			// adding one to pcnt accounts for the prime 2
+            return this.M.GetPrimeCount(this.primeLimit) == 1 + this.pcnt;
         }
 
         public bool Validate2()
         {
-            return this.M.GetPrimeCount(this.primeLimit) == Count();
+            return this.M.GetPrimeCount(this.primeLimit) == 1 + this.countPrimes(3);
         }
     }
 }
