@@ -1,12 +1,13 @@
 ﻿using System.Diagnostics;
 
+
 namespace PrimeSieve
 {
     class Program
     {
-		static long MaxPrime = 1000000;
-		static int  MaxTime = 5000;
-		static bool option = false;
+		static long MaxPrime = 100;
+		static int  MaxTime = 50;
+		static bool option = true;
 		
 		static void ParseArgs(string[] args)
 		{
@@ -30,10 +31,11 @@ namespace PrimeSieve
                         MaxTime = max;
                     }
                 }
-                Console.WriteLine("primeSieve!");
-                Console.WriteLine($" prime limit {MaxPrime}");
-                Console.WriteLine($" time limit {MaxTime} milliseconds");
 			}
+			
+			Console.WriteLine("primeSieve!");
+			Console.WriteLine($" prime limit {MaxPrime}");
+			Console.WriteLine($" time limit {MaxTime} milliseconds");
 		}
 		
 
@@ -41,27 +43,27 @@ namespace PrimeSieve
         {
             Mtable M = new Mtable(MaxPrime);
             long Expected = M.GetPrimesExpected(MaxPrime);
+			if(Expected < 0){
+				string msg = "max prime not found.";
+                throw new ApplicationException(msg);
+			}
             int cntPasses = 0;
             long duration = 0;
             bool valid = false;
-            long[] primeList = new long [1];
+            Sieve sieve = new Sieve(MaxPrime, ref M);
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             while (stopWatch.ElapsedMilliseconds <= MaxTime)
             {
-                Sieve sieve = new Sieve(MaxPrime, ref M);
-                sieve.Sieve2();
-                if (sieve.Valid)
-                {
-                    cntPasses++;
-                    valid = sieve.Valid;
-                    if (option &&  primeList.Length < 3)
-                        primeList = sieve.GetPrimes();
-                }
+                valid = sieve.Sieve2();
+				if (valid)
+					cntPasses++;
                 else
                 {
-                    string msg = $"the actual count {sieve.Count} does not match the expected{Expected}";
+					long np = sieve.CountPrimes(3);
+					long cp = sieve.Count();
+                    string msg = $"the actual count {cp}, {np} does not match the expected {Expected}";
                     throw new ApplicationException(msg);
                 }
             }
@@ -69,7 +71,18 @@ namespace PrimeSieve
             duration = stopWatch.ElapsedTicks;
             // OUTPUT THE RESULTS
             Console.WriteLine($"number of passes {cntPasses}");
-            Console.WriteLine($"quantity of clock tics used {duration}");
+            Console.WriteLine($"quantity of clock tics used {duration}");                    
+			if (option )
+			{
+				int ii = 1;
+				long [] p = sieve.GetPrimes();
+				foreach(var prime in p){
+					Console.Write($",  {prime}");
+					ii++;
+					if( ii % 10 == 0)
+						Console.WriteLine();	
+				}
+			}	
         }
 		
 		
@@ -83,7 +96,7 @@ namespace PrimeSieve
 			catch (ApplicationException ex)
 			{
 				Console.WriteLine(ex.Message);
-			}
+			}	
         }
-    }
+    };
 }
