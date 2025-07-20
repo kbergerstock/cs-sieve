@@ -21,14 +21,14 @@ namespace PrimeSieve{
             this.primeLimit = prime_max;
             this.sqrtLimit = M.GetPrimeSqrt(this.primeLimit);
             this.expected = M.GetPrimesExpected(this.primeLimit);
-        }
+			this.bitArray = new bool[10];
+		}
 
         //returns an array of prime numbers
         //based on the results in the sieve array
         public long[] GetPrimes()
         {
-            long size = 1 + this.M.GetPrimesExpected(this.primeLimit);
-            long[] p = new long[size];
+            long[] p = new long[this.expected];
              // account for 2 being the first prime
             p[0] = 2;  
             // set the fill array indice to the next empty spoot

@@ -7,8 +7,12 @@
 		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
 	</PropertyGroup>
 	<PropertyGroup>
+		<platform>x64</platform>
+		<optimize>true</optimize>
+		<configuration>release</configuration>
 		<AssemblyName>PrimeSieve</AssemblyName>
 		<OutputType>Exe</OutputType>
+		<OutputPath>x64/</OutputPath>
 	</PropertyGroup>
   
 	<ItemGroup>

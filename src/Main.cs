@@ -5,32 +5,24 @@ namespace PrimeSieve
 {
     class Program
     {
-		static long MaxPrime = 100;
-		static int  MaxTime = 50;
-		static bool option = true;
+		static long MaxPrime = 1000000;
+		static int  MaxTime = 5000;
+		static bool option = false;
 		
 		static void ParseArgs(string[] args)
 		{
 			foreach (var arg in args)
-            {
+            { 	
                 if (arg.StartsWith("--s"))
-                {
                     option = true;
-                }
-                else if (arg.StartsWith("--n"))
-                {
-                    if (int.TryParse(arg.Substring("--n".Length), out int max))
-                    {
+                if (arg.StartsWith("--n")){
+                    if (long.TryParse(arg.Substring("--n".Length), out long max))
                         MaxPrime = max;
-                    }
-                }
-                else if (arg.StartsWith("--t"))
-                {
+				}
+                if (arg.StartsWith("--t")){
                     if (int.TryParse(arg.Substring("--t".Length), out int max))
-                    {
                         MaxTime = max;
-                    }
-                }
+				}
 			}
 			
 			Console.WriteLine("primeSieve!");
@@ -48,7 +40,6 @@ namespace PrimeSieve
                 throw new ApplicationException(msg);
 			}
             int cntPasses = 0;
-            long duration = 0;
             bool valid = false;
             Sieve sieve = new Sieve(MaxPrime, ref M);
 
@@ -68,20 +59,23 @@ namespace PrimeSieve
                 }
             }
             stopWatch.Stop();
-            duration = stopWatch.ElapsedTicks;
+			long milliseconds = stopWatch.ElapsedMilliseconds;
+            long duration = stopWatch.ElapsedTicks;
             // OUTPUT THE RESULTS
             Console.WriteLine($"number of passes {cntPasses}");
+            Console.WriteLine($"quantity of milliseconds used {milliseconds}");                    
+			Console.WriteLine($"average time per pass {milliseconds/cntPasses}");
             Console.WriteLine($"quantity of clock tics used {duration}");                    
 			if (option )
 			{
-				int ii = 1;
-				long [] p = sieve.GetPrimes();
+				int ii = 0;
+				long[] p = sieve.GetPrimes();
 				foreach(var prime in p){
-					Console.Write($",  {prime}");
+					Console.Write(string.Format("{0,7:#######}",prime));
 					ii++;
 					if( ii % 10 == 0)
 						Console.WriteLine();	
-				}
+					}
 			}	
         }
 		
@@ -99,4 +93,6 @@ namespace PrimeSieve
 			}	
         }
     };
-}
+};
+
+//eof
