@@ -1,11 +1,12 @@
-﻿
+﻿using System.Diagnostics;
+
 namespace PrimeSieve
 {
     class Program
     {
-		long MaxPrime = 1000000;
-		int MaxTime = 5000;
-		bool option = false;
+		static long MaxPrime = 1000000;
+		static int  MaxTime = 5000;
+		static bool option = false;
 		
 		static void ParseArgs(string[] args)
 		{
@@ -30,16 +31,16 @@ namespace PrimeSieve
                     }
                 }
                 Console.WriteLine("primeSieve!");
-                Console.WriteLine($" prime limit {0}", MaxPrime);
-                Console.WriteLine($" time limit {0} milliseconds", MaxTime);
+                Console.WriteLine($" prime limit {MaxPrime}");
+                Console.WriteLine($" time limit {MaxTime} milliseconds");
 			}
 		}
 		
 
-        public static void TimeSieve(long MaxPrime, int MaxTime, bool show)
+        public static void TimeSieve()
         {
             Mtable M = new Mtable(MaxPrime);
-            long Expected = M.GetPrimeCount(MaxPrime);
+            long Expected = M.GetPrimesExpected(MaxPrime);
             int cntPasses = 0;
             long duration = 0;
             bool valid = false;
@@ -55,12 +56,12 @@ namespace PrimeSieve
                 {
                     cntPasses++;
                     valid = sieve.Valid;
-                    if (show &&  primeList.Length < 3)
+                    if (option &&  primeList.Length < 3)
                         primeList = sieve.GetPrimes();
                 }
                 else
                 {
-                    string msg = $"the acutual count {sieve.Count} does not match the expected{Expected}";
+                    string msg = $"the actual count {sieve.Count} does not match the expected{Expected}";
                     throw new ApplicationException(msg);
                 }
             }
@@ -68,16 +69,16 @@ namespace PrimeSieve
             duration = stopWatch.ElapsedTicks;
             // OUTPUT THE RESULTS
             Console.WriteLine($"number of passes {cntPasses}");
-            Console.WriteLine($"quanity of clock tics used {duration}");
+            Console.WriteLine($"quantity of clock tics used {duration}");
         }
 		
 		
 		static void Main(string[] args)
         {
-			ParseArgs(args)
+			ParseArgs(args);
 			try
 			{
-				TimeSieve(MaxPrime, MaxTime, option);
+				TimeSieve();
 			}
 			catch (ApplicationException ex)
 			{

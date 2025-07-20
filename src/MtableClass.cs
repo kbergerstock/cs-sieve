@@ -1,11 +1,12 @@
 
-namespace  PrimeSieve{
+namespace  PrimeSieve
+{
     public class Mtable
     {
 
         // the first column is the sieve limit, the 
         // the second  column is the number of primes up to that limit
-        // the third column is the square root of the sieve limit{)
+        // the third column is the square root of the sieve limit
         public long[,] M = new long[10, 3] {
                     { 10, 4, 3 },
                     { 100, 25, 10 },
@@ -23,52 +24,52 @@ namespace  PrimeSieve{
         {
             this.ndx = -1;
         }
-        public Mtable(long primeLmit)
+		
+        public Mtable(long primeLimit)
         {
-            this.ndx = Find_ndx(primeLmit);
+            this.ndx = Find_ndx(primeLimit);
         }
 
-        private long Find_ndx(long primeLmit)
+        private long Find_ndx(long primeLimit)
         {
             if (this.ndx < 0)
             {
                 for (int idx = 0; idx < M.Length; idx++)
                 {
-                    if (M[idx, 0] == primeLmit)
+                    if (M[idx, 0] == primeLimit)
                     {
                         this.ndx = idx;
-                        return this.ndx;
+						break;
                     }
                 }
             }
-            if (this.ndx < 0)
-                return -1;
-            else
-                return this.ndx;
+			return this.ndx;
         }
 
-        public long GetPrimeCount(long primeLmit)
+        public long GetPrimesExpected(long primeLimit)
         {
+            long expected = -1;    
             if (this.ndx >= 0)
-                return M[ndx, 1];
+                expected = M[this.ndx, 1];
             else
-                this.ndx = Find_ndx(primeLmit);
+                this.ndx = Find_ndx(primeLimit);
                 if (this.ndx >= 0)
-                    return M[ndx, 1];
-                else
-                    return -1; // not found
+                    expected = M[ndx, 1];
+            // -1 not found                    
+            return expected;
         }
 
-        public long GetPrimeSqrt(long primeLmit)
+        public long GetPrimeSqrt(long primeLimit)
         {
+            long isqrt = -1;
             if (this.ndx >= 0)
-                return M[ndx, 2];
+                isqrt = M[ndx, 2];
             else
-                this.ndx = Find_ndx(primeLmit);
+                this.ndx = Find_ndx(primeLimit);
                 if (this.ndx >= 0)
-                    return M[ndx, 2];
-                else
-                    return -1; // not found
+                    isqrt = M[ndx, 2];
+            // -1 not found                    
+            return isqrt; 
         }
     }
 }

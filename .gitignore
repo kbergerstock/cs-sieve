@@ -12,6 +12,7 @@
 *.profraw
 *.vsidx
 *.cache
+*.binlog
 style.css
 index.html
 clang.cmds.txt

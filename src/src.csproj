@@ -6,6 +6,10 @@
 		<Nullable>enable</Nullable>
 		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
 	</PropertyGroup>
+	<PropertyGroup>
+		<AssemblyName>PrimeSieve</AssemblyName>
+		<OutputType>Exe</OutputType>
+	</PropertyGroup>
   
 	<ItemGroup>
 		<Compile Include="main.cs" />
