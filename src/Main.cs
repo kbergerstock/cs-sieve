@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿// Copyright (c) 2025, Keith R. Bergerstock
+
+using System.Diagnostics;
 
 namespace PrimeSieve
 {
@@ -74,7 +76,7 @@ namespace PrimeSieve
                 long[] p = sieve.GetPrimes();
                 foreach (var prime in p)
                 {
-                    Console.Write(string.Format("{0,7:#######}", prime));
+                    Console.Write(string.Format("{0,10:##########}", prime));
                     ii++;
                     if (ii % 10 == 0)
                         Console.WriteLine();
