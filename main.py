@@ -2,6 +2,7 @@
 # Keith R. Bergerstock
 # alternate uses same algorithm but stores data in a bytearray
 
+from icecream import ic
 import time
 import sys
 from sieve_alt import M, Primes
@@ -13,63 +14,86 @@ def milliseconds(t0, t2):
 
 # main
 def time_sieve(prime_limit, time_limit, output):
-    cnt = 0  # pass counter
+    pass_cntr = 0  # pass counter
     duration = 0
     val = 0
-    cnd = 0
+    prime_cnt = 0
+    primes = Primes()  # the sieve
     p = []
-    print("--n{}".format(prime_limit))
-    print("--t{}".format(time_limit))
-    while duration < time_limit:
-        primes = Primes(prime_limit)  # the sieve
-        # i only want to time the sieve performance
-        t1 = t0 = time.perf_counter()
-        primes.sieve2()
-        t1 = time.perf_counter()
-        duration += milliseconds(t0, t1)
-        cnt += 1
-        val = primes.validate
-        cnd = primes.counted()
-        if output:
-            p = primes.get_primes()
-        if not val():
-            raise RuntimeError("Vlidation of counted primes failed")
+    sys.stdout.writelines(f"--n{prime_limit}\n")
+    sys.stdout.writelines(f"--t{time_limit}\n")
 
-    # prints the results of the sieve
+    start = time.perf_counter()
+    while duration < time_limit:
+        # i only want to time the sieve performance
+        primes.init(prime_limit)
+        prime_cnt, val = primes.sieve2()
+        ic(prime_cnt, val)
+        duration = milliseconds(start, time.perf_counter())
+        if val:
+            pass_cntr += 1
+        else:
+            error = Exception("Timed sieve")
+            error.add_note(f"Validation of counted primes failed in pass {pass_cntr}")
+            raise error
+
+    # prints the results of the sieve/7
     if val:
-        print(
-            f"passes: {0:4d}  time: {1:9.4f} Ms Avg: {2:7.4f} Ms  Limit: {3:8d}  count: {4:4d} valid: {5}",
-            cnt,
-            duration,
-            duration / cnt,
-            prime_limit,
-            val,
-            cnd,
-        )
+        sys.stdout.writelines(f"passes: {pass_cntr} \n")
+        sys.stdout.writelines(f"duration : {duration:9.4f}\n")
+        sys.stdout.writelines(f"average time per run {duration / pass_cntr:7.4f}\n")
+        sys.stdout.writelines(f"Limit: {prime_limit}\n")
+        sys.stdout.writelines(f"primes found: {prime_cnt}\n")
+        sys.stdout.writelines(f"validation results: {val}\n")
 
     if val and output:
-        print(p)
+        lc = 0
+        primes = primes.get_primes()
+        for p in primes:
+            sys.stdout.write(f"{p:10}")
+            lc += 1
+            if lc % 10 == 0:
+                sys.stdout.write("\n")
 
 
-if __name__ == "__main__":
-    prime_limit = 1000000
-    time_limit = 10000  # time unit is in mS
+def processArgs(argv):
+    prime_limit = 1000000  # default max prime IS 1,000,000
+    time_limit = 5000  # time unit is 5 SECONDS in mS
     output = False
 
-    for argc in sys.argv:
+    for argc in argv:
         cmd = argc[0:3]
         val = argc[3:]
-        if cmd == "--":
+        if cmd == "--t":
             time_limit = int(val)
         if cmd == "--n":
             prime_limit = int(val)
         if cmd == "--s":
             output = True
 
-    if prime_limit in M:
-        try:
-            time_sieve(prime_limit, time_limit, output)
-        except RuntimeError as msg:
-            print(msg)
+    if not prime_limit in M:
+        error = Exception("processArgs")
+        error.add_note(f"invalid max prime {prime_limit}")
+        raise error
     else:
-        print("invalid prime limit")
+        return time_limit, prime_limit, output
+
+
+def main(argv):
+    time_max = 0
+    prime_max = 0
+    show = False
+    # PROCESS THE CMD LINE ARGS
+    time_max, prime_max, show = processArgs(argv)
+    # i check if the prime limit is valid here
+    # so that the sieve does not need to
+
+    try:
+        time_sieve(prime_max, time_max, show)
+    except Exception as err:
+        for note in err.__notes__:
+            sys.stdout.writelines(note + "\n")
+
+
+if __name__ == "__main__":
+    main(sys.argv)

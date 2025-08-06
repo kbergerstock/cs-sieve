@@ -2,11 +2,12 @@
 # Keith R. Bergerstock
 # data is stored in a bitarray
 # use "pip install bitarray" to install package
+# original version 1.2.0.0
+# copyright (c) 2025 Keith R. Bergerstock
 
 import time
 import sys
 import bitarray
-
 
 # the table includes the square root of the sieve limit as the second column
 M = {
@@ -86,13 +87,12 @@ def time_sieve(prime_limit: int, time_limit: int, output: bool):
     duration = 0
     print("--n{}".format(prime_limit))
     print("--t{}".format(time_limit))
+    t0 = time.perf_counter()
     while duration < time_limit:
-        primes = Primes(prime_limit)
         # i only want to time the sieve performance
-        t1 = t0 = time.perf_counter()
         primes.sieve2()
         t1 = time.perf_counter()
-        duration += milliseconds(t0, t1)
+        duration = milliseconds(t0, t1)
         cnt += 1
         if not primes.validate():
             break
@@ -115,7 +115,7 @@ def time_sieve(prime_limit: int, time_limit: int, output: bool):
 if __name__ == "__main__":
     prime_limit = 1000000
     # time unit is in mS
-    time_limit = 10000
+    time_limit = 5000
     output = False
 
     for argc in sys.argv:
