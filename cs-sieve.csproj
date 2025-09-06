@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <PropertyGroup>
+    <platform>x64</platform>
+    <optimize>true</optimize>
+    <configuration>Release</configuration>
+    <AssemblyName>PrimeSieve</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <BaseOutputPath>E:\krbProjects\Sieves\cs-sieve\bin</BaseOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="main.cs" />
+    <Compile Include="MtableClass.cs" />
+    <Compile Include="sieveClass.cs" />
+  </ItemGroup>
+</Project>
